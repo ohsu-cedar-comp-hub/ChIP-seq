@@ -20,10 +20,10 @@ mkdir 	00_fastqs \
 	31_multimap \
 	40_convert \
 	41_carpools \
+	50_qc \
 	extras \
 	extras/md5 \
-	FastQC \
-	qc \
+	FastQC 
 
 ### Copy code
 cp -r $stool/* $sdata/code
@@ -37,7 +37,7 @@ mkdir	00_md5 \
 	20_s2b \
 	30_filter_and_qc \
 	40_convert \
-	error
+	50_error
 
 ### Copy ref library
 cp $stool/reference/* $sdata/00_fastqs

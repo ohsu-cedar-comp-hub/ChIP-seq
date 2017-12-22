@@ -1,12 +1,37 @@
+#!/usr/bin/Rscript
+
 ### Extract run information from condor error files created by bowtie2
 ### Will grab data on # aligned, # multi-mapped, and # unaligned (as well as percentages)
 
-### Get command-line arguments
-arguments <- commandArgs(trailingOnly=TRUE);
-input.dir <- arguments[1];              # should be a directory containing only and all bowtie2_<cluster.num>.<job.num>.err files,
-                                        # as well as test_bowtie2 versions.
-file.dir <- arguments[2]                # path to 10_sam files (just for sample names)
-out.dir <- arguments[3]                 # should be qc/ directory within data.
+### Dependencies
+library(optparse)
+
+### List of options
+optlist <- list(
+  make_option(
+    c("-i", "--inputDir"),
+    type = "character",
+    help = "Directory containing only and all bowtie2_<cluster.num>.err files. Should be $sdata/code/logs/50_error."),
+  make_option(
+    c("-f", "--fileDir"),
+    type = "character",
+    help = "Directory containing the sam files ($sdata/data/10_sam). This is just to map the names."),
+  make_option(
+    c("-o", "--outDir"),
+    type = "character",
+    help = "Directory to output data. Should be $sdata/data/50_qc.")
+)
+
+### Parse command line
+p <- OptionParser(usage = "%prog -i inputDir -f fileDir -o outDir",
+	option_list = optlist)
+
+args <- parse_args(p)
+opt <- args$options
+
+input.dir <- args$inputDir
+file.dir <- args$fileDir
+out.dir <- args$outDir
 
 ### Examine the current directory for the files to process
 files.in.dir <- list.files(input.dir, pattern="*.err");

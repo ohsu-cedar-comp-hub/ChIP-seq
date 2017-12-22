@@ -1,15 +1,39 @@
+#!/usr/bin/Rscript
+
 ###
 ### Aggregate Summary Statistics About Alignment Results
 ###
 
 ### Dependencies
-library(data.table)
+suppressMessages(library(data.table))
+library(optparse)
 
-### Arguments
-arguments <- commandArgs(trailingOnly = T)
-input_dir_v <- arguments[1]             # should be data/<combined/raw>/qc/mapq_qc/ (or no combined/raw if not applicable)
-output_dir_v <- arguments[2]            # should be data/<combined/raw>/qc/
-lane_v <- F                             # True means multiple lanes ran, so keep lane in sample name. False uses shorter sample name
+### Make list of options
+optlist <- list(
+  make_option(
+    c("-i", "--inputDir"),
+    type = "character",
+    help = "Directory to mapQ QC data. Should be $sdata/data/50_qc/mapq_qc/"),
+  make_option(
+    c("-o", "--outDir"),
+    type = "character",
+    help = "Path to output directory. Should be $sdata/data/50_qc/"),
+  make_option(
+    c("-l", "--lane"),
+    type = "logical",
+    help = "TRUE - multiple lanes run, keep lane in sample name. FALSE - all samples on single lane. Shorten sample name to exclude lane.")
+)
+
+### Parse command line
+p <- OptionParser(usage = "%prog -i inputDir -o outDir -l T/F",
+	option_list = optlist)
+
+args <- parse_args(p)
+opt <- args$options
+
+input_dir_v <- args$inputDir
+output_dir_v <- args$outDir
+lane_v <- args$lane
 
 ### Wrangling
 input_files_v <- list.files(input_dir_v)
