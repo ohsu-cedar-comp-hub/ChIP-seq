@@ -21,9 +21,13 @@ mkdir 	00_fastqs \
 	40_convert \
 	41_carpools \
 	extras \
+	extras/md5 \
 	FastQC \
 	qc \
-	reference
 
 ### Copy code
+cp -r $stool/* $sdata/code
+
+### Copy ref library
+cp $stool/reference/* $sdata/00_fastqs
 
