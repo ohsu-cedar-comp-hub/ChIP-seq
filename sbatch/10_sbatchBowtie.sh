@@ -29,7 +29,6 @@ rm temp
 
 ### SET I/O VARIABLES
 
-BASE=$sdata
 IN=$sdata/data/00_fastqs             # Directory containing all input files. Should be one job per file
 OUT=$sdata/data/10_sam           # Directory where output files should be written
 MYBIN=$sdata/code/10_run_bowtie2.sh          # Path to shell script or command-line executable that will be used
@@ -63,7 +62,7 @@ CURRFILE=`ls $IN/*.fastq | awk -v line=$SLURM_ARRAY_TASK_ID '{if (NR == line) pr
 
 ### Execute
 
-$MYBIN $IN/$CURRFILE $OUT
+$MYBIN $CURRFILE $OUT
 
 ### STILL TO DO
 # How do I wait until the entire array of jobs is finished before moving the log files?
