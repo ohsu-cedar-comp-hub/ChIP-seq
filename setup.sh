@@ -31,13 +31,13 @@ cp -r $stool/* $sdata/code
 ### Make log directories
 mkdir $sdata/code/logs
 cd $sdata/code/logs
-mkdir	md5 \
-	unzip \
-	bowtie \
-	convert \
-	error \
-	filter_and_qc \
-	s2b
+mkdir	00_md5 \
+	01_unzip \
+	10_bowtie \
+	20_s2b \
+	30_filter_and_qc \
+	40_convert \
+	error
 
 ### Copy ref library
 cp $stool/reference/* $sdata/00_fastqs

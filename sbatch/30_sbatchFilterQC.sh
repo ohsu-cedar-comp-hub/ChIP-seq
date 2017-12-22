@@ -29,11 +29,9 @@ rm temp
 
 ### SET I/O VARIABLES
 
-BASE=$sherm/LIB170830MS
-IN=$BASE/data/20_bam             # Directory containing all input files. Should be one job per file
-OUT=$BASE/data/           # Directory where output files should be written
-LOG=$data/path/to/logDir           # Directory where log files should be moved to
-MYBIN=$BASE/code/30_filter_and_qc_alignment.sh          # Path to shell script or command-line executable that will be used
+IN=$sdata/data/20_bam             # Directory containing all input files. Should be one job per file
+OUT=$sdata/data/           # Directory where output files should be written
+MYBIN=$sdata/code/30_filter_and_qc_alignment.sh          # Path to shell script or command-line executable that will be used
 
 ### Record slurm info
 
