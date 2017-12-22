@@ -1,0 +1,29 @@
+#!/bin/sh
+
+###
+### Run Bowtie2 for Alignment to sgRNA Reference
+###
+
+# Executable
+BOWTIE=/home/exacloud/lustre1/BioCoders/Applications/miniconda3/bin/bowtie2
+
+# Arguments
+var=$1
+echo $var
+eval `echo $var | sed -e 's/^\([^:]\{1,\}\)\:\([^:]\{1,\}\)\:\([^:]\{1,\}\)\:\([^:]\{1,\}\)\:\([^:]\{1,\}\)\:\([^:]\{1,\}\)$/n=\1 u=\2 mydir=\3 fil=\4 in=\5 out=\6/'`
+
+# Get arguments from to do file
+myfile="$mydir/$fil"
+mynum=`expr $n + 1`
+FULLFILE=`head -$mynum $myfile | tail -1`
+FILE="${FULLFILE%.*}"
+
+
+# Combine arguments
+IN=$mydir/data/$in
+OUT=$mydir/data/$out
+
+
+# Run bowtie
+cd $IN
+$BOWTIE -p 4 -3 81 -x full_lib_ref -U $IN/$FILE.fastq -S $OUT/$FILE.sam
