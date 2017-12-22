@@ -28,6 +28,17 @@ mkdir 	00_fastqs \
 ### Copy code
 cp -r $stool/* $sdata/code
 
+### Make log directories
+mkdir $sdata/code/logs
+cd $sdata/code/logs
+mkdir	md5 \
+	unzip \
+	bowtie \
+	convert \
+	error \
+	filter_and_qc \
+	s2b
+
 ### Copy ref library
 cp $stool/reference/* $sdata/00_fastqs
 
