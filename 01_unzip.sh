@@ -1,12 +1,7 @@
 #!/bin/bash
 
-PROJ=$data
-INDIR=$PROJ/fastqs_from_core/fastqs
+DIR=$1
+FILE=$2
 
-#echo $INDIR
-
-SAMPLE=$1
-FILE=$INDIR/$SAMPLE
-
-gunzip $SAMPLE
+gunzip $DIR/$FILE
 

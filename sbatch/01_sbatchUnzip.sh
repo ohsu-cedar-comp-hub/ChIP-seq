@@ -16,8 +16,8 @@
 
 ### SET I/O VARIABLES
 
-IN=$data/fastqs_from_core/fastqs             # Directory containing all input files. Should be one job per file
-MYBIN=$tool/misc/unzip.sh                    # Path to shell script or command-line executable that will be used
+IN=$sdata/data/00_fastqs # Directory containing all input files. Should be one job per file
+MYBIN=$stool/01_unzip.sh                    # Path to shell script or command-line executable that will be used
 
 ### Record slurm info
 
@@ -37,47 +37,55 @@ echo "SLURM_NTASKS_PER_NODE " $SLURM_NTASKS_PER_NODE
 echo "SLURM_TASKS_PER_NODE " $SLURM_TASKS_PER_NODE
 printf "\n\n"
 
+### Sherman data is usually short enough to just do one by one
+for file in `ls $IN`; do
+	CMD="sh $MYBIN $IN $file"
+	echo $CMD
+	eval $CMD
+done
+
+
 ### create array of file names in this location (input files)
 ### Extract file name information as well
 
 ### Get a template file
-TEMP=`ls -v $IN | head -1`
-BASE="${TEMP%%S[0-9]*}"
-TENS=$SLURM_ARRAY_TASK_ID
-
-### Print checks
-echo "Example file: " $TEMP
-echo "File base: " $BASE
-printf "\n\n"
-
-### Execute
-
-for i in {0..9}; do
-
-    ## Get file names
-    if [ $TENS == 0 ]; then
-        FILE1=$IN/$BASE\S$i\_R1_001.fastq.gz
-        FILE2=$IN/$BASE\S$i\_R2_001.fastq.gz
-    else
-        FILE1=$IN/$BASE\S$TENS$i\_R1_001.fastq.gz
-        FILE2=$IN/$BASE\S$TENS$i\_R2_001.fastq.gz
-    fi
-
-    ## Check file names
-    echo "Files to run: " $FILE1 $FILE2
-
-    ## Prepare command
-    cmd1="sh $MYBIN $FILE1"
-    cmd2="sh $MYBIN $FILE2"
-
-    ## Echo command
-    echo $cmd1
-    echo $cmd2
-
-    ## Evaluate command
-    eval $cmd1
-    eval $cmd2
-
-    printf "\n\n"
-
-done
+#TEMP=`ls -v $IN | head -1`
+#BASE="${TEMP%%S[0-9]*}"
+#TENS=$SLURM_ARRAY_TASK_ID
+#
+#### Print checks
+#echo "Example file: " $TEMP
+#echo "File base: " $BASE
+#printf "\n\n"
+#
+#### Execute
+#
+#for i in {0..9}; do
+#
+#    ## Get file names
+#    if [ $TENS == 0 ]; then
+#        FILE1=$IN/$BASE\S$i\_R1_001.fastq.gz
+#        FILE2=$IN/$BASE\S$i\_R2_001.fastq.gz
+#    else
+#        FILE1=$IN/$BASE\S$TENS$i\_R1_001.fastq.gz
+#        FILE2=$IN/$BASE\S$TENS$i\_R2_001.fastq.gz
+#    fi
+#
+#    ## Check file names
+#    echo "Files to run: " $FILE1 $FILE2
+#
+#    ## Prepare command
+#    cmd1="sh $MYBIN $FILE1"
+#    cmd2="sh $MYBIN $FILE2"
+#
+#    ## Echo command
+#    echo $cmd1
+#    echo $cmd2
+#
+#    ## Evaluate command
+#    eval $cmd1
+#    eval $cmd2
+#
+#    printf "\n\n"
+#
+#done

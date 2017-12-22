@@ -29,11 +29,10 @@ rm temp
 
 ### SET I/O VARIABLES
 
-BASE=$sherm/LIB170830MS
-IN=$BASE/data/00_fastqs             # Directory containing all input files. Should be one job per file
-OUT=$BASE/data/10_sam           # Directory where output files should be written
-LOG=$data/path/to/logDir           # Directory where log files should be moved to
-MYBIN=$BASE/code/10_run_bowtie2.sh          # Path to shell script or command-line executable that will be used
+BASE=$sdata
+IN=$sdata/data/00_fastqs             # Directory containing all input files. Should be one job per file
+OUT=$sdata/data/10_sam           # Directory where output files should be written
+MYBIN=$sdata/code/10_run_bowtie2.sh          # Path to shell script or command-line executable that will be used
 
 ### Record slurm info
 
@@ -54,7 +53,7 @@ echo "SLURM_TASKS_PER_NODE " $SLURM_TASKS_PER_NODE
 ### create array of file names in this location (input files)
 ### This only works if the output goes to a new location...if you're writing output to same directory use other method
 
-CURRFILE=`ls $IN | awk -v line=$SLURM_ARRAY_TASK_ID '{if (NR == line) print $0}'`
+CURRFILE=`ls $IN/*.fastq | awk -v line=$SLURM_ARRAY_TASK_ID '{if (NR == line) print $0}'`
 
 ### Alternative method
 ### $TODO is a text file with one line per file that will be run.
