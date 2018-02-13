@@ -5,7 +5,7 @@
 ###
 
 # Executable
-BOWTIE=/home/exacloud/lustre1/BioCoders/Applications/miniconda3/bin/bowtie2
+BOWTIE=/home/exacloud/lustre1/BioCoders/Applications/anaconda2/bin/bowtie2
 
 # Arguments
 var=$1

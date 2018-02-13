@@ -47,7 +47,7 @@ SETUP
 1. Create bowtie index.  
 
    ```
-   ~$ BUILD=/home/exacloud/lustre1/BioCoders/Applications/miniconda3/bin/bowtie2-build
+   ~$ BUILD=/home/exacloud/lustre1/BioCoders/Applications/anaconda2/bin/bowtie2-build
    ~$ cd $sdata/data/00_fastqs
    ~$ $BUILD library_ref.fasta library_ref
    ```

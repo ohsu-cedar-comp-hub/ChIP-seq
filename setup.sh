@@ -2,11 +2,14 @@
 
 ### Make sure $sdata and $stool are set in .bash_paths
 
+### Make directory
+mkdir -p $sdata
+
 ### Go to base directory
 cd $sdata
 
 ### Make base directories
-mkdir code data logs
+mkdir code data #logs
 
 ### Make data directories
 cd data
@@ -29,7 +32,7 @@ mkdir 	00_fastqs \
 cp -r $stool/* $sdata/code
 
 ### Make log directories
-mkdir $sdata/code/logs
+mkdir -p $sdata/code/logs
 cd $sdata/code/logs
 mkdir	00_md5 \
 	01_unzip \
@@ -40,5 +43,5 @@ mkdir	00_md5 \
 	50_error
 
 ### Copy ref library
-cp $stool/reference/* $sdata/00_fastqs
+cp $stool/reference/* $sdata/data/00_fastqs/
 

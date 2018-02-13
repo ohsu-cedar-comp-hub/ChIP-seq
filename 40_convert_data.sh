@@ -11,7 +11,7 @@
 ### Also output so that 40_convert is tab-separated rather than space-sep
 
 # Executable
-BOWTIE=/home/exacloud/lustre1/BioCoders/Applications/miniconda3/bin/bowtie2
+BOWTIE=/home/exacloud/lustre1/BioCoders/Applications/anaconda2/bin/bowtie2
 SAMTOOLS=/home/exacloud/lustre1/BioCoders/Applications/samtools
 
 # Arguments
