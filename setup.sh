@@ -9,39 +9,53 @@ mkdir -p $sdata
 cd $sdata
 
 ### Make base directories
-mkdir code data #logs
+mkdir code data logs
 
 ### Make data directories
 cd data
 mkdir 	00_fastqs \
-	01_mapped_ids \
-	02_unmapped_fastqs \
-	02_unmapped_ids \
+	01_trim \
+	02_trimLog \
 	10_sam \
 	20_bam \
-	30_filtered_bam \
-	31_multimap \
-	40_convert \
-	41_carpools \
-	50_qc \
+	30_uniq_map \
+	31_multi_map \
+	32_unmapped_ids \
+	33_good_reads \
+	34_bad_reads \
+	40_remDup \
+	41_remDupLog \
+	50_peaks \
+	50.5_bedPeaks
+	51_bdgcmp \
+	52_bw \
+	53_wigCorrelate \
+	54_signalTrack \
+	60_idr \
+	70_phantom \
+	qc \
 	extras \
-	extras/md5 \
-	FastQC 
+	extras/md5
 
 ### Copy code
 cp -r $stool/* $sdata/code
 
 ### Make log directories
-mkdir -p $sdata/code/logs
-cd $sdata/code/logs
+cd $sdata/logs
 mkdir	00_md5 \
 	01_unzip \
+	02_trim \
+	03_bowtieBuild \
 	10_bowtie \
 	20_s2b \
 	30_filter_and_qc \
-	40_convert \
-	50_error
+	40_remDup \
+	50_callPeaks \
+	51_callPeaksBDGCMP \
+	52_bdg2bw \
+	53_wigCorrelate \
+	60_idr \
+	61_peakPlot \
+	70_phantom
 
-### Copy ref library
-cp $stool/reference/* $sdata/data/00_fastqs/
 

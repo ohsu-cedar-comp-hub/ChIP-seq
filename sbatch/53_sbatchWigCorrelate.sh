@@ -7,31 +7,23 @@
 
 #SBATCH --partition          exacloud                # partition (queue)
 #SBATCH --nodes              1                       # number of nodes
-#SBATCH --ntasks             8                       # number of "tasks" to be allocated for the job
+#SBATCH --ntasks             2                       # number of "tasks" to be allocated for the job
 #SBATCH --ntasks-per-core    1                       # Max number of "tasks" per core.
 #SBATCH --cpus-per-task      1                       # Set if you know a task requires multiple processors
-#SBATCH --mem-per-cpu        16000                    # Memory required per allocated CPU (mutually exclusive with mem)
+#SBATCH --mem-per-cpu        12000                    # Memory required per allocated CPU (mutually exclusive with mem)
 ##SBATCH --mem                16000                  # memory pool for each node
 #SBATCH --time               0-24:00                 # time (D-HH:MM)
-#SBATCH --output             filterQC_%A_%a.out        # Standard output
-#SBATCH --error              filterQC_%A_%a.err        # Standard error
-#SBATCH --array              1-8                    # sets number of jobs in array
-
-: '
-mv template_%A_10.out test1
-for file in template_%A_[1-9].out; do
-   cut -d ' ' -f 3 $file > temp; 
-   paste -d ' ' test1 temp > test1a; 
-   mv -f test1a test1; 
-done; 
-rm temp
-'
+#SBATCH --output             wigCorrelate_%A_%a.out        # Standard output
+#SBATCH --error              wigCorrelate_%A_%a.err        # Standard error
+#SBATCH --array              1-2                    # sets number of jobs in array
 
 ### SET I/O VARIABLES
 
-IN=$sdata/data/20_bam             # Directory containing all input files. Should be one job per file
-OUT=$sdata/data/           # Directory where output files should be written
-MYBIN=$sdata/code/30_filter_and_qc_alignment.sh          # Path to shell script or command-line executable that will be used
+IN=$sdata/data/52_bw                           # Directory containing all input files. Should be one job per file
+OUT=$sdata/data/53_wigCorrelate/
+MYBIN=$sdata/misc/wigCorrelate                    # Path to shell script or command-line executable that will be used
+TODO=$sdata/todo/53_wigCorrelate.txt              # Todo file containing all files to call peaks for
+TREAT=2                                           # Index of treatment in filename split by _
 
 ### Record slurm info
 
@@ -49,22 +41,31 @@ echo "SLURM_NTASKS_PER_CORE " $SLURM_NTASKS_PER_CORE
 echo "SLURM_NTASKS_PER_NODE " $SLURM_NTASKS_PER_NODE
 echo "SLURM_TASKS_PER_NODE " $SLURM_TASKS_PER_NODE
 
-### create array of file names in this location (input files)
-### This only works if the output goes to a new location...if you're writing output to same directory use other method
+### Get files (as an array)
+CURRFILE=(`awk -v line=$SLURM_ARRAY_TASK_ID '{if (NR == line) print $0}' $TODO`)
 
-CURRFILE=`ls $IN/*.bam | awk -v line=$SLURM_ARRAY_TASK_ID '{if (NR == line) print $0}'`
-CURRFILE=`basename $CURRFILE`
+### Get length of array minus one
+LEN=$(expr ${#CURRFILE[@]} - 1)
 
-### Alternative method
-### $TODO is a text file with one line per file that will be run.
+### Get treatment name for output
+TREATNAME=`echo $CURRFILE | cut -d '_' -f $TREAT`
 
-# TODO=$data/path/to/todoFile
-# CURRFILE=`awk -v line=$SLURM_ARRAY_TASK_ID '{if (NR == line) print $0}' $TODO`
+### Change suffix and add directory to each element of array
+for i in $(eval echo "{0..$LEN}"); do
+	temp=$IN/${CURRFILE[$i]}
+	CURRFILE[$i]=$temp
+done
+
+### Double check
+echo "Path and files that will be passed as input:"
+echo ${CURRFILE[@]}
+echo ''
 
 ### Execute
+mkdir -p $OUT
+cd $IN
 
-$MYBIN $IN/$CURRFILE $OUT
+cmd="$MYBIN ${CURRFILE[@]} > $OUT/$TREATNAME\_wigCorr.txt"
 
-### STILL TO DO
-# How do I wait until the entire array of jobs is finished before moving the log files?
-
+echo $cmd
+eval $cmd

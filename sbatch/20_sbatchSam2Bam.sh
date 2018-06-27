@@ -7,7 +7,7 @@
 
 #SBATCH --partition          exacloud                # partition (queue)
 #SBATCH --nodes              1                       # number of nodes
-#SBATCH --ntasks             9                       # number of "tasks" to be allocated for the job
+#SBATCH --ntasks             8                       # number of "tasks" to be allocated for the job
 #SBATCH --ntasks-per-core    1                       # Max number of "tasks" per core.
 #SBATCH --cpus-per-task      1                       # Set if you know a task requires multiple processors
 #SBATCH --mem-per-cpu        8000                    # Memory required per allocated CPU (mutually exclusive with mem)
@@ -15,7 +15,7 @@
 #SBATCH --time               0-24:00                 # time (D-HH:MM)
 #SBATCH --output             s2b_%A_%a.out        # Standard output
 #SBATCH --error              s2b_%A_%a.err        # Standard error
-#SBATCH --array              1-9                    # sets number of jobs in array
+#SBATCH --array              1-8                    # sets number of jobs in array
 
 : '
 mv template_%A_10.out test1
@@ -32,6 +32,8 @@ rm temp
 IN=$sdata/data/10_sam             # Directory containing all input files. Should be one job per file
 OUT=$sdata/data/20_bam           # Directory where output files should be written
 MYBIN=$sdata/code/20_sam_to_bam.sh          # Path to shell script or command-line executable that will be used
+
+mkdir -p $OUT
 
 ### Record slurm info
 

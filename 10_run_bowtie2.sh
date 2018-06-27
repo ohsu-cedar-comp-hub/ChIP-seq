@@ -9,38 +9,25 @@ BOWTIE=/home/exacloud/lustre1/BioCoders/Applications/anaconda2/bin/bowtie2
 
 # Arguments
 IN=$1
-OUT=$2
+REF=$2
+OUT=$3
 
 # File manipulation
 DIR=${IN%/*}
 FILE=${IN##*/}
-BASE=${FILE%%.*}
+BASE=${FILE%%_L00*}
 
 # Test
 echo "IN: " $IN
+echo "REF: " $REF
 echo "OUT: " $OUT
 echo "DIR: " $DIR
 echo "FILE: " $FILE
 echo "BASE: " $BASE
 
-
-## Arguments
-#var=$1
-#echo $var
-#eval `echo $var | sed -e 's/^\([^:]\{1,\}\)\:\([^:]\{1,\}\)\:\([^:]\{1,\}\)\:\([^:]\{1,\}\)\:\([^:]\{1,\}\)\:\([^:]\{1,\}\)$/n=\1 u=\2 mydir=\3 fil=\4 in=\5 out=\6/'`
-#
-## Get arguments from to do file
-#myfile="$mydir/$fil"
-#mynum=`expr $n + 1`
-#FULLFILE=`head -$mynum $myfile | tail -1`
-#FILE="${FULLFILE%%.*}"
-#
-#
-## Combine arguments
-#IN=$mydir/data/$in
-#OUT=$mydir/data/$out
-
-
 # Run bowtie
 cd $DIR
-$BOWTIE -p 4 -3 81 -x library_ref -U $IN -S $OUT/$BASE.sam
+cmd="$BOWTIE -p 4 -x $REF -U $IN -S $OUT/$BASE.sam"
+
+echo $cmd
+eval $cmd

@@ -7,15 +7,13 @@
 
 #SBATCH --partition          exacloud                # partition (queue)
 #SBATCH --nodes              1                       # number of nodes
-#SBATCH --ntasks             8                       # number of "tasks" to be allocated for the job
+#SBATCH --ntasks             1                       # number of "tasks" to be allocated for the job
 #SBATCH --ntasks-per-core    1                       # Max number of "tasks" per core.
 #SBATCH --cpus-per-task      1                       # Set if you know a task requires multiple processors
-#SBATCH --mem-per-cpu        16000                    # Memory required per allocated CPU (mutually exclusive with mem)
-##SBATCH --mem                16000                  # memory pool for each node
+#SBATCH --mem                64000                  # memory pool for each node
 #SBATCH --time               0-24:00                 # time (D-HH:MM)
-#SBATCH --output             filterQC_%A_%a.out        # Standard output
-#SBATCH --error              filterQC_%A_%a.err        # Standard error
-#SBATCH --array              1-8                    # sets number of jobs in array
+#SBATCH --output             bowtieBuild_%j.out        # Standard output
+#SBATCH --error              bowtieBuild_%j.err        # Standard error
 
 : '
 mv template_%A_10.out test1
@@ -29,9 +27,16 @@ rm temp
 
 ### SET I/O VARIABLES
 
-IN=$sdata/data/20_bam             # Directory containing all input files. Should be one job per file
-OUT=$sdata/data/           # Directory where output files should be written
-MYBIN=$sdata/code/30_filter_and_qc_alignment.sh          # Path to shell script or command-line executable that will be used
+### IN = PATH TO GENOME THAT WILL BE INDEXED FOR ALIGNMENT
+### DIR = PATH TO INPUT DATA (FASTQ FILES THAT NEED TO BE ALIGNED)
+### BASE = BASE NAME OF GENOME THAT WILL BE USED FOR INDEX OUTPUT FILES
+### MYBIN = PATH TO SHELL SCRIPT/COMMAND-LINE EXECUTABLE THAT WILL BE USED
+
+IN="/home/exacloud/lustre1/BioCoders/DataResources/Genomes/hg38/release-87/genome/Homo_sapiens.GRCh38.dna_sm.toplevel.fa"
+DIR=$sdata/data/01_trim
+BASE="Homo_sapiens.GRCh38.87"
+MYBIN=$sdata/code/03_bowtieBuild.sh
+
 
 ### Record slurm info
 
@@ -49,22 +54,4 @@ echo "SLURM_NTASKS_PER_CORE " $SLURM_NTASKS_PER_CORE
 echo "SLURM_NTASKS_PER_NODE " $SLURM_NTASKS_PER_NODE
 echo "SLURM_TASKS_PER_NODE " $SLURM_TASKS_PER_NODE
 
-### create array of file names in this location (input files)
-### This only works if the output goes to a new location...if you're writing output to same directory use other method
-
-CURRFILE=`ls $IN/*.bam | awk -v line=$SLURM_ARRAY_TASK_ID '{if (NR == line) print $0}'`
-CURRFILE=`basename $CURRFILE`
-
-### Alternative method
-### $TODO is a text file with one line per file that will be run.
-
-# TODO=$data/path/to/todoFile
-# CURRFILE=`awk -v line=$SLURM_ARRAY_TASK_ID '{if (NR == line) print $0}' $TODO`
-
-### Execute
-
-$MYBIN $IN/$CURRFILE $OUT
-
-### STILL TO DO
-# How do I wait until the entire array of jobs is finished before moving the log files?
-
+$MYBIN $DIR $IN $BASE
