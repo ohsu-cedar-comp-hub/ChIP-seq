@@ -13,9 +13,10 @@ mkdir code data logs
 
 ### Make data directories
 cd data
-mkdir 	00_fastqs \
+mkdir -p 00_fastqs \
 	01_trim \
 	02_trimLog \
+	02_trimLog/trimLogProcessed \
 	10_sam \
 	20_bam \
 	30_uniq_map \

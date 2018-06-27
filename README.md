@@ -51,7 +51,7 @@ SETUP
    ~$ sbatch $sdata/code/sbatch/02_sbatchTrimSeq.sh
    ~$ mv $sdata/data/01_trim/*_report.txt $sdata/data/02_trimLog
    ~$ cd $sdata/02_trimLog
-   ~$ for file in *_report.txt; do name=${file%%_L005*}; sh $sdata/code/021_processTrimLog.sh $file $name trimLogProcessed/; done
+   ~$ for file in *_report.txt; do name=${file%%_L005*}; sh $sdata/code/qc/01_processTrimLog.sh $file $name trimLogProcessed/; done
    ```
 
 1. Create bowtie index.  
