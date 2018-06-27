@@ -37,7 +37,7 @@ echo "SLURM_NTASKS_PER_NODE " $SLURM_NTASKS_PER_NODE
 echo "SLURM_TASKS_PER_NODE " $SLURM_TASKS_PER_NODE
 
 ### Get a file using the task ID
-CURRFILE=`ls $IN/*.fastq | awk -v line=$SLURM_ARRAY_TASK_ID '{if (NR == line) print $0}'`
+CURRFILE=`ls $IN/*.fastq* | awk -v line=$SLURM_ARRAY_TASK_ID '{if (NR == line) print $0}'`
 
 ### Run trim bash script with input directory, input file and output directory
 $MYBIN $IN $CURRFILE $OUT

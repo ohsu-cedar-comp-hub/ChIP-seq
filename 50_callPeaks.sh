@@ -58,7 +58,7 @@ echo $cmd
 ### Convert narrowpeaks file to bed
 mkdir -p $OUT2
 
-cmd="cut -f 1-5 $OUT/$BASE\_peaks.narrowPeak | sed 's/^/chr/' > $OUT2/$BASE\_narrowPeak.bed"
+cmd="cut -f 1-5 $OUT/$BASE\_peaks.narrowPeak | sed -E 's/(^[1-9X]|^1[0-9]|^2[0-2])/chr\1/' > $OUT2/$BASE\_narrowPeak.bed"
 
 echo $cmd
 eval $cmd

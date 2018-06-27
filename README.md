@@ -33,11 +33,12 @@ SETUP
 1. Run multiqc on FastQC files.  
 
    ```
-   ~$ multiqc $sdata/data/FastQC
+   ~$ MULTIQC=/home/exacloud/lustre1/BioCoders/Applications/anaconda2/bin/multiqc
+   ~$ $MULTIQC $sdata/data/FastQC
    <copy files to local drive to view>
    ```
 
-1. Unzip.  
+1. Unzip. (Not necessary, but useful to take a look at fastq files if you want).
 
    ```
    ~$ sbatch $sdata/code/sbatch/01_sbatchUnzip.sh
