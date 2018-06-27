@@ -96,7 +96,7 @@ PROCESS
    ```
    ~$ sbatch $sdata/code/sbatch/40_sbatchRemDup.sh
    ~$ mv $sdata/code/sbatch/remDup_* $sdata/logs/40_remDup
-   ~$ sh $sdata/code/41_processDupLog.sh $sdata/data/41_remDupLog $sdata/data/qc/summary
+   ~$ sh $sdata/code/qc/02_processDupLog.sh $sdata/data/41_remDupLog $sdata/data/qc/summary
    ```
 
 1. Aggregate bowtie QC stuff.
