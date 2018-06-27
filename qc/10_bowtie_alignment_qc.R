@@ -22,10 +22,10 @@ optlist <- list(
     c("-i", "--inputDir"),
     type = "character",
     help = "Directory containing all bowtie2_<cluster.num>.err files. Should be $sdata/logs/10_bowtie (or similar)."),
-  make_option(
-    c("-f", "--fileDir"),
-    type = "character",
-    help = "Directory containing the sam files ($sdata/data/10_sam). This is just to map the names. TODO - remove this dependency."),
+#  make_option(
+#    c("-f", "--fileDir"),
+#    type = "character",
+#    help = "Directory containing the sam files ($sdata/data/10_sam). This is just to map the names. TODO - remove this dependency."),
   make_option(
     c("-o", "--outDir"),
     type = "character",
@@ -33,14 +33,15 @@ optlist <- list(
 )
 
 ### Parse command line
-p <- OptionParser(usage = "%prog -i inputDir -f fileDir -o outDir",
+#p <- OptionParser(usage = "%prog -i inputDir -f fileDir -o outDir",
+p <- OptionParser(usage = "%prog -i inputDir -o outDir",
 	option_list = optlist)
 
 args <- parse_args(p)
 opt <- args$options
 
 input.dir <- args$inputDir
-file.dir <- args$fileDir
+#file.dir <- args$fileDir
 out.dir <- args$outDir
 
 ###############
@@ -56,8 +57,8 @@ files.in.dir <- files.in.dir[order(as.numeric(gsub("bowtie2_[0-9]+_|\\.err", "",
 ### Get names from other directory
 ### Don't need to sort because this is order they were run in
 ### TODO - could update the bowtie run and echo the file name to the output file and extract it here.
-file.names <- list.files(file.dir, pattern="*.sam")
-names_v <- sapply(file.names, function(x) paste(strsplit(x, split = "_")[[1]][2:3], collapse = "_"), USE.NAMES=F)
+#file.names <- list.files(file.dir, pattern="*.sam")
+#names_v <- sapply(file.names, function(x) paste(strsplit(x, split = "_")[[1]][2:3], collapse = "_"), USE.NAMES=F)
 
 ### Create output data.frame of appropriate fields
 output.df <- data.frame(sample=character(),                 # 1
@@ -81,34 +82,37 @@ for(i in 1:length(files.in.dir))	{
     curr.file <- file.path(input.dir, files.in.dir[i]);
     
     ## Get name
-    curr.name <- names_v[i]
+    #curr.name <- names_v[i]
     
     ## Read file
     curr.record <- readLines(curr.file);
 
     ## Make sure it's the right file
-    if(length(curr.record) != 6)   {
+    if(length(curr.record) != 7)   {
         stop("Unexpected length of report for file: ", curr.file, "\n", sep="");
     }   #   fi
 
+    ## Get name
+    curr.name <- curr.record[1]
+
     ## Total number of reads
-    curr.total <- strsplit(curr.record[1], " ")[[1]][1]
+    curr.total <- strsplit(curr.record[2], " ")[[1]][1]
 
     ## Number NOT aligned
-    curr.no.align.full <- unlist(strsplit(trimws(curr.record[3]), " "))
+    curr.no.align.full <- unlist(strsplit(trimws(curr.record[4]), " "))
     curr.no.align <- curr.no.align.full[1]
     curr.pct.no.align <- as.numeric(gsub("\\(|\\)|%", '', curr.no.align.full[2]))
 
     ## Number UNIQUE alignment
-    curr.one.align.full <- unlist(strsplit(trimws(curr.record[4]), " "))
+    curr.one.align.full <- unlist(strsplit(trimws(curr.record[5]), " "))
     curr.one.align <- curr.one.align.full[1]
     curr.pct.one.align <- as.numeric(gsub("\\(|\\)|%", '', curr.one.align.full[2]))
 
-    curr.mult.align.full <- unlist(strsplit(trimws(curr.record[5]), " "))
+    curr.mult.align.full <- unlist(strsplit(trimws(curr.record[6]), " "))
     curr.mult.align <- curr.mult.align.full[1]
     curr.pct.mult.align <- as.numeric(gsub("\\(|\\)|%", '', curr.mult.align.full[2]))
 
-    curr.overall <- gsub("%", "", unlist(strsplit(trimws(curr.record[6]), " "))[1])
+    curr.overall <- gsub("%", "", unlist(strsplit(trimws(curr.record[7]), " "))[1])
 
     ## Add to output
     output.df[i,]$sample <- curr.name

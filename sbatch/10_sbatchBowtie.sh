@@ -7,7 +7,7 @@
 
 #SBATCH --partition          exacloud                # partition (queue)
 #SBATCH --nodes              1                       # number of nodes
-#SBATCH --ntasks             8                       # number of "tasks" to be allocated for the job
+#SBATCH --ntasks             1                       # number of "tasks" to be allocated for the job
 #SBATCH --ntasks-per-core    1                       # Max number of "tasks" per core.
 #SBATCH --cpus-per-task      1                       # Set if you know a task requires multiple processors
 #SBATCH --mem-per-cpu        12000                    # Memory required per allocated CPU (mutually exclusive with mem)
@@ -15,7 +15,7 @@
 #SBATCH --time               0-24:00                 # time (D-HH:MM)
 #SBATCH --output             bowtie2_%A_%a.out        # Standard output
 #SBATCH --error              bowtie2_%A_%a.err        # Standard error
-#SBATCH --array              1-8                    # sets number of jobs in array
+#SBATCH --array              1-1                    # sets number of jobs in array
 
 : '
 mv template_%A_10.out test1
@@ -52,8 +52,9 @@ echo "SLURM_TASKS_PER_NODE " $SLURM_TASKS_PER_NODE
 ### create array of file names in this location (input files)
 ### This only works if the output goes to a new location...if you're writing output to same directory use other method
 
-CURRFILE=`ls $IN/*.fq* | awk -v line=$SLURM_ARRAY_TASK_ID '{if (NR == line) print $0}'`
-
+#CURRFILE=`ls $IN/*.fq* | awk -v line=$SLURM_ARRAY_TASK_ID '{if (NR == line) print $0}'`
+CURRFILE=/home/exacloud/lustre1/CompBio/users/hortowe/Sherman_80/DNA180319MS/data/01_trim/test_trimmed.fq.gz
+OUT=/home/exacloud/lustre1/CompBio/users/hortowe/Sherman_80/DNA180319MS/data/01_trim/out
 
 ### Execute
 mkdir -p $OUT

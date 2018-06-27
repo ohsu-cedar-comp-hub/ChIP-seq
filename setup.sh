@@ -43,7 +43,7 @@ cp -r $stool/* $sdata/code
 
 ### Make log directories
 cd $sdata/logs
-mkdir	00_md5 \
+mkdir -p 00_md5 \
 	01_unzip \
 	02_trim \
 	03_bowtieBuild \

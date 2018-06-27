@@ -102,8 +102,8 @@ PROCESS
 1. Aggregate bowtie QC stuff.
 
    ```
-   ~$ Rscript $sdata/code/qc/bowtie_alignment_qc.R -i $sdata/logs/10_bowtie -f $sdata/data/10_sam -o $sdata/data/qc/summary
-   ~$ for dir in `ls $sdata/data/qc/*_mapq`; do Rscript $sdata/code/bowtie_mapqDistr.R -i $sdata/data/qc/$dir -o $sdata/data/qc/summary -f "2,3,4,5"
+   ~$ Rscript $sdata/code/qc/10_bowtie_alignment_qc.R -i $sdata/logs/10_bowtie -f $sdata/data/10_sam -o $sdata/data/qc/summary
+   ~$ for dir in `ls $sdata/data/qc/*_mapq`; do Rscript $sdata/code/11_bowtie_mapqDistr.R -i $sdata/data/qc/$dir -o $sdata/data/qc/summary -f "2,3,4,5"
    ``` 
    
 1. Transfer data to local for R analysis.  
