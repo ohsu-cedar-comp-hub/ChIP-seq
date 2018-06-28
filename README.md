@@ -111,10 +111,10 @@ PEAK CALLING
 ============
 
 1. Call peaks using MACS2 (following instructions from: https://github.com/taoliu/MACS/wiki/Build-Signal-Track)  
-   1. -B tells MACS2 to store fragment pileup scores in bedGraph files.  
-   1. --SPMR tells MACS2 to generate pileup signal of 'fragment pileup per million reads'.  
-   1. --qvalue 0.05 is the default. Included for ease of memory. Uses Benjamini-Hochberg adjustment of p-values. Minimum cutoff to call significant regions.  
-   1. --gsize hs is for mappable genome size of humans. Set to 'mm' for mouse.  
+   1. `-B` tells MACS2 to store fragment pileup scores in bedGraph files.  
+   1. `--SPMR` tells MACS2 to generate pileup signal of 'fragment pileup per million reads'.  
+   1. `--qvalue 0.05` is the default. Included for ease of memory. Uses Benjamini-Hochberg adjustment of p-values. Minimum cutoff to call significant regions.  
+   1. `--gsize hs` is for mappable genome size of humans. Set to 'mm' for mouse.  
 1. 50_sbatchCallPeaks.sh will also create a "bed" version that prepends "chr" to the chromosome column and removes non-standard chromosomes.
 
    ```
@@ -188,7 +188,7 @@ PEAK CALLING
 REVIEW OF CURRENT DATA
 ======================
 
-A lot of different files have been produced. Now to review what everything is and what it's potential purpose is.  
+A lot of different files have been produced. Now to review what everything is and what its potential purpose is.  
 
 ### 50_peaks  
 
