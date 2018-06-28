@@ -45,13 +45,14 @@ SETUP
    ~$ mv $sdata/code/sbatch/unzip_* $sdata/logs/01_unzip
    ```
 
-1. Trim adapter sequence and reformat log files
+1. Trim adapter sequence, reformat log files, and make plots
 
    ```
    ~$ sbatch $sdata/code/sbatch/02_sbatchTrimSeq.sh
    ~$ mv $sdata/data/01_trim/*_report.txt $sdata/data/02_trimLog
    ~$ cd $sdata/02_trimLog
    ~$ for file in *_report.txt; do name=${file%%_L005*}; sh $sdata/code/qc/01_processTrimLog.sh $file $name trimLogProcessed/; done
+   ~$ Rscript $sdata/code/qc/02_trimViz.R --summaryDir $sdata/data/qc/trimLogProcessed/summary/ --trimDistDir $sdata/data/qc/trimLogProcessed/trimDist --meta $sdata/meta/meta.txt --outDir $sdata/data/qc/trimLogProcessed/plots
    ```
 
 1. Create bowtie index.  
@@ -91,12 +92,18 @@ ALIGNMENT PROCESSING
    ~$ mv $sdata/code/sbatch/filterQC_* $sdata/logs/30_filter_and_qc
    ```
 
+   1. Aggregate/reformat QC files
+
+   ```
+   ~$ Rscript $sdata/code/qc/10_bowtie_alignment_qc.R --inputDir $sdata/logs/10_bowtie --outDir $sdata/data/qc/summary/
+   ~$ Rscript $sdata/code/qc/11_bowtie_mapqDistr.R --inputDir $sdata/data/qc/[multi/uniq]\_mapq/ --outDir 
+
 1. Mark duplicates with picard tools and reformat log files
 
    ```
-   ~$ sbatch $sdata/code/sbatch/40_sbatchRemDup.sh
-   ~$ mv $sdata/code/sbatch/remDup_* $sdata/logs/40_remDup
-   ~$ sh $sdata/code/qc/02_processDupLog.sh $sdata/data/41_remDupLog $sdata/data/qc/summary
+   ~$ sbatch $sdata/code/sbatch/40\_sbatchRemDup.sh
+   ~$ mv $sdata/code/sbatch/remDup\_\* $sdata/logs/40\_remDup
+   ~$ sh $sdata/code/qc/02\_processDupLog.sh $sdata/data/41\_remDupLog $sdata/data/qc/summary
    ```
 
 1. Aggregate bowtie QC stuff.
@@ -193,7 +200,7 @@ A lot of different files have been produced. Now to review what everything is an
 
 This directory contains the original output of the MACS2 peak calling step. There are a few different file formats that contain essentially the same information, along with some QC information. Data in this directory can be used to visualize peaks in a genome browser, but if you ran the signal track steps above, those results are better to use for that purpose.  
 
-1. <sample>_control_lambda.bdg
+1. [sample]_control_lambda.bdg
    1. bedGraph of control peak windows for determining lambda
       1. Chromosome name
       1. Start of window
@@ -203,13 +210,13 @@ This directory contains the original output of the MACS2 peak calling step. Ther
          1. slocal
          1. llocal
    1. lambda is expected number of reads in window, so the "control lambda" is basically the expected noise
-   1. View this file along with the <sample>_treat_pileup.bdg to compare the treated peaks against the control noise.
-1. <sample>_model.r
+   1. View this file along with the [sample]_treat_pileup.bdg to compare the treated peaks against the control noise.
+1. [sample]_model.r
    1. Run this script to produce 'model shift size' and 'cross correlation' plots based on MACS2 run
    1. Generates files:
-      1. <sample>_peakModel.pdf (model shift size)
-      1. <sample>_crossCor.pdf (cross correlation)
-1. <sample>_peaks.narrowPeak
+      1. [sample]_peakModel.pdf (model shift size)
+      1. [sample]_crossCor.pdf (cross correlation)
+1. [sample]_peaks.narrowPeak
    1. BED6+4 with peak locations and summit
       1. Chromosome name
       1. Start position of peak (0-based)
@@ -222,7 +229,7 @@ This directory contains the original output of the MACS2 peak calling step. Ther
       1. -log10(qvalue) for peak summit
       1. Relative summit position to peak start
    1. Able to load directly to UCSC genome browser
-1. <sample>_peaks.xls
+1. [sample]_peaks.xls
    1. Contains information about called peaks. One line per peak, plus header lines
       1. Chromosome name
       1. Start position of peak (1-based)
@@ -236,14 +243,14 @@ This directory contains the original output of the MACS2 peak calling step. Ther
       1. -log10(qvalue) of peak summit
       1. name of peak
    1. **NOTE THAT XLS COORDINATES ARE 1-BASED, WHICH IS DIFFERENT THAN BED'S O-BASED**
-1. <sample>_summits.bed
+1. [sample]_summits.bed
    1. BED file with peak summit location for each peak
       1. Chromosome name
       1. Start position of summit (0-based). Will be `(narrowPeak start) + (narrowPeak relative summit position)`
       1. End position of summit. Will be one more than start position.
       1. Peak name
       1. -log10(qvalue) of peak summit 
-1. <sample>_treat_pileup.bdg
+1. [sample]_treat_pileup.bdg
    1. bedGraph file of treatment peak windows
       1. Chromosome name
       1. Start of window
@@ -254,17 +261,17 @@ This directory contains the original output of the MACS2 peak calling step. Ther
 
 ### 50.5_bedPeaks
 
-This directory contains the exact same information as can be found in the <sample>_peaks.narrowPeak files in 50_peaks. The only difference is that the 1st column now has "chr" prepended to the chromosome number, which is required for some downstream tools.  
+This directory contains the exact same information as can be found in the [sample]_peaks.narrowPeak files in 50_peaks. The only difference is that the 1st column now has "chr" prepended to the chromosome number, which is required for some downstream tools.  
 
 ### 51_bdgcmp / 52_bw 
 
 The bdgcmp subcommand is designed to generate noise-subtracted tracks. The MACS2 developer explains a little about it [here](https://groups.google.com/forum/#!topic/macs-announcement/yefHwueKbiY). These files are also good to view in a genome browser. The 52_bw directory contains the same information as that in 51_bdgcmp, except in the smaller bigWig binary format instead. It's recommended to use these files for viewing, since they are the easiest to transfer from exacloud.
 
-1. <sample>_FE.bdg
+1. [sample]_FE.bdg
    1. linear Fold Enrichment
    1. Simple descriptive measurement of difference between ChIP and control
    1. Can introduce high variability at low signals
-1. <sample>_logLR.bdg
+1. [sample]_logLR.bdg
    1. log10 likelihood ratio between ChIP and control.
    1. Based on dynamic poisson model
    1. statistical evaluation of enrichment.
@@ -281,7 +288,7 @@ This directory contains the exact same file types as described in 50_peaks, 51_b
 
 IDR (Irreproducible Discovery Rate) is used to measure the reproducibility of results from replicate experiments, described [here](https://github.com/nboley/idr) in detail. If the `--plot` option is selected, a few QC plots will be created in addition to the consensus peak files.  
 
-1. <sample>_idr
+1. [sample]_idr
    1. modified BED file (20 total columns)
       1. Chromosome name
       1. Start position of peak (0-based)
@@ -306,7 +313,7 @@ IDR (Irreproducible Discovery Rate) is used to measure the reproducibility of re
       1. rep1 summit value
       1. rep2 start, end, signal, summit
       1. repN start, end, signal, summit
-1. <sample>_idr.png
+1. [sample]_idr.png
    1. 4 different plots, see link above for full description.  
 
 ###
