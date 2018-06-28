@@ -62,8 +62,8 @@ SETUP
    ~$ sbatch $sdata/code/sbatch/03_sbatchBowtieBuild.sh
    ```
 
-PROCESS
-=======
+ALIGNMENT PROCESSING
+====================
 
 1. Run bowtie2.  
 
@@ -102,10 +102,89 @@ PROCESS
 1. Aggregate bowtie QC stuff.
 
    ```
-   ~$ Rscript $sdata/code/qc/10_bowtie_alignment_qc.R -i $sdata/logs/10_bowtie -f $sdata/data/10_sam -o $sdata/data/qc/summary
+   ~$ Rscript $sdata/code/qc/10_bowtie_alignment_qc.R -i $sdata/logs/10_bowtie -o $sdata/data/qc/summary
    ~$ for dir in `ls $sdata/data/qc/*_mapq`; do Rscript $sdata/code/11_bowtie_mapqDistr.R -i $sdata/data/qc/$dir -o $sdata/data/qc/summary -f "2,3,4,5"
    ``` 
-   
+
+PEAK CALLING
+============
+
+1. Call peaks using MACS2 (following instructions from: https://github.com/taoliu/MACS/wiki/Build-Signal-Track)  
+   1. -B tells MACS2 to store fragment pileup scores in bedGraph files.  
+   1. --SPMR tells MACS2 to generate pileup signal of 'fragment pileup per million reads'.  
+   1. --qvalue 0.05 is the default. Included for ease of memory. Uses Benjamini-Hochberg adjustment of p-values. Minimum cutoff to call significant regions.  
+   1. --gsize hs is for mappable genome size of humans. Set to 'mm' for mouse.  
+1. 50_sbatchCallPeaks.sh will also create a "bed" version that prepends "chr" to the chromosome column and removes non-standard chromosomes.
+
+   ```
+   ### Create todo files
+   ~$ ls -v $sdata/data/40_remDup | grep -v Input > $sdata/todo/50_callPeaks.txt
+   ~$ ls -v $sdata/data/40_remDup | grep Input > $sdata/todo/50_ctl.txt
+   ### Run
+   ~$ sbatch $sdata/code/sbatch/50_sbatchCallPeaks.sh
+   ~$ mv $sdata/code/sbatch/callPeaks_* $sdata/logs/50_callPeaks
+   ```
+
+1. Run MACS2 again, this time with `bdgcmp` instead of `callpeak`
+   1. `macs2 bdgcmp` will 'deduct noise by comparing two signal tracks in bedGraph'
+
+   ```
+   ~$ sbatch $sdata/code/sbatch/51_callPeaksBDGCMP.sh`
+   ~$ mv $sdata/code/sbatch/callPeaks_BDGCMP_* $sdata/logs/51_callPeaksBDGCMP
+   ```
+
+1. Convert bedGraph files to bigWig files  
+   1. A few extra scripts are required (located in `misc/`). See above link for more detailed instruction.
+
+   ```
+   ~$ sbatch $sdata/code/sbatch/52_sbatchBdg2bw.sh
+   ~$ mv $sdata/code/sbatch/bdg2bw_* $sdata/logs/52_bdg2bw
+   ```
+1. Run correlation on bigWig files to determine if replicates are good enough to combine.  
+   1. Copy `$sdata/todo/50_callPeaks.txt` to `$sdata/todo/53_wigCorrelate.txt`
+   1. Reformat so that all of the samples for each treatment are on a single line, with each file separated by a space.
+   1. Additionally, must change suffix to be Fold Enrichment bigWig file
+   1. Example:
+
+   ```
+   ~$ cat $sdata/todo/50_callPeaks.txt
+   DNA180319MS_CM_IP_1_S28.bam
+   DNA180319MS_CM_IP_2_S29.bam
+   DNA180319MS_CM_IP_3_S30.bam 
+   ~$ cat $sdata/todo/53_wigCorrelate.txt
+   DNA180319MS_CM_IP_1_S28_FE.bw DNA180319MS_CM_IP_2_S29_FE.bw DNA180319MS_CM_IP_3_S30_FE.bw
+   ```
+   1. Run:  
+
+   ```
+   ~$ sbatch $sdata/code/sbatch/53_sbatchWigCorrelate.sh
+   ~$ mv $sdata/code/sbatch/wigCorrelate_* $sdata/logs/53_wigCorrelate
+   ```
+
+1. Check the output files and create signal tracks if appropriate.
+   1. Copy `$sdata/todo/53_wigCorrelate.txt` to `$sdata/todo/54_signalTrack.txt`
+   1. Change suffix back to original bam file rather than _FE.bw
+
+   ```
+   ~$ sbatch $sdata/code/sbatch/54_sbatchSignalTracks.sh
+   ~$ mv $sdata/code/sbatch/signalTrack_* $sdata/logs/54_signalTrack
+   ```
+
+1. Run idr on samples as well.
+   1. Copy `sdata/todo/54_signalTrack.txt` to `sdata/todo/60_idr.txt`
+   1. Change suffixes to `_peaks.narrowPeak` rather than `.bam`
+
+   ```
+   ~$ sbatch $sdata/code/sbatch/60_sbatchIDR.sh
+   ~$ mv $sdata/code/sbatch/idr_* $sdata/logs/60_idr
+   ```
+
+   1. Check the `.err` files to see IDR results.
+
+###
+### STOPPED HERE 6/27/2018
+###
+
 1. Transfer data to local for R analysis.  
 
 ANALYSIS
