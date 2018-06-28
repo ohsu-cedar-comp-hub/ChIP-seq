@@ -11,6 +11,7 @@ SETUP
    ```
    export sdata="/path/to/LIBXXXXXMS"
    export stool="/path/to/this/installation"
+   export BIOCODERS="/path/to/BioCoders/"
    ```
 
 1. Run `sh $stool/setup.sh` to create empty directories.  
