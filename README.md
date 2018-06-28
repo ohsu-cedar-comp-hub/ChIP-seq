@@ -53,7 +53,7 @@ SETUP
    ~$ mv $sdata/data/01_trim/*_report.txt $sdata/data/02_trimLog
    ~$ cd $sdata/02_trimLog
    ~$ for file in *_report.txt; do name=${file%%_L005*}; sh $sdata/code/qc/01_processTrimLog.sh $file $name trimLogProcessed/; done
-   ~$ Rscript $sdata/code/qc/02_trimViz.R --summaryDir $sdata/data/qc/trimLogProcessed/summary/ --trimDistDir $sdata/data/qc/trimLogProcessed/trimDist --meta $sdata/meta/meta.txt --outDir $sdata/data/qc/trimLogProcessed/plots
+   ~$ Rscript $sdata/code/qc/02_trimViz.R --summaryDir $sdata/data/qc/trimLogProcessed/summary/ --trimDistDir $sdata/data/qc/trimLogProcessed/trimDist --meta $sdata/meta/meta.txt --outDir $sdata/data/qc/plots/trimQC/
    ```
 
 1. Create bowtie index.  
@@ -97,22 +97,31 @@ ALIGNMENT PROCESSING
 
    ```
    ~$ Rscript $sdata/code/qc/10_bowtie_alignment_qc.R --inputDir $sdata/logs/10_bowtie --outDir $sdata/data/qc/summary/
-   ~$ Rscript $sdata/code/qc/11_bowtie_mapqDistr.R --inputDir $sdata/data/qc/[multi/uniq]\_mapq/ --outDir 
-
-1. Mark duplicates with picard tools and reformat log files
-
-   ```
-   ~$ sbatch $sdata/code/sbatch/40\_sbatchRemDup.sh
-   ~$ mv $sdata/code/sbatch/remDup\_\* $sdata/logs/40\_remDup
-   ~$ sh $sdata/code/qc/02\_processDupLog.sh $sdata/data/41\_remDupLog $sdata/data/qc/summary
+   ~$ for dir in `ls $sdata/data/qc/*_mapq`; do Rscript $sdata/code/qc/11_bowtie_mapqDistr.R -i $sdata/data/qc/$dir -o $sdata/data/qc/summary -f "2,3,4,5"
    ```
 
-1. Aggregate bowtie QC stuff.
+   1. Make plots
 
    ```
-   ~$ Rscript $sdata/code/qc/10_bowtie_alignment_qc.R -i $sdata/logs/10_bowtie -o $sdata/data/qc/summary
-   ~$ for dir in `ls $sdata/data/qc/*_mapq`; do Rscript $sdata/code/11_bowtie_mapqDistr.R -i $sdata/data/qc/$dir -o $sdata/data/qc/summary -f "2,3,4,5"
-   ``` 
+   ~$ Rscript $sdata/code/qc/12_plot_alignment_qc.R --inputFile $sdata/data/qc/summary/bowtie2.alignment.QC.summary.txt \
+						    --outDir $sdata/data/qc/plots/alignQC/ \
+						    --treat 1 --type 2 --rep 3
+   ~$ Rscript $sdata/code/qc/13_mapq_alignment_qc.R --uniqInputFile $sdata/data/qc/summary/uniq_mapq_summary.txt \
+						    --multiInputFile $sdata/data/qc/summary/multi_mapq_summary.txt \
+						    --treat 1 --type 2 --rep 3 --cutOff 10 
+						    --outDir $sdata/data/qc/plots/alignQC/
+   ```
+
+1. Mark duplicates with picard tools, reformat log files for plotting, and plot.
+
+   ```
+   ~$ sbatch $sdata/code/sbatch/40_sbatchRemDup.sh
+   ~$ mv $sdata/code/sbatch/remDup_* $sdata/logs/40_remDup
+   ~$ sh $sdata/code/qc/20_processDupLog.sh $sdata/data/41_remDupLog $sdata/data/qc/summary
+   ~$ Rscript $sdata/code/qc/21_plot_markDup_qc.R --inputFile $sdata/data/qc/summary/dupSummary.txt \
+						  --outDir $sdata/data/qc/plots/alignQC/ \
+						  --treat 1 --type 2 --rep 3
+   ```
 
 PEAK CALLING
 ============
@@ -131,6 +140,12 @@ PEAK CALLING
    ### Run
    ~$ sbatch $sdata/code/sbatch/50_sbatchCallPeaks.sh
    ~$ mv $sdata/code/sbatch/callPeaks_* $sdata/logs/50_callPeaks
+   ```
+
+1. Count peaks to check all quality of samples.
+
+   ```
+   ~$ sh $sdata/code/qc/30_countPeaks.sh $sdata/data/50_peaks $sdata/data/qc/summary
    ```
 
 1. Run MACS2 again, this time with `bdgcmp` instead of `callpeak`
@@ -324,26 +339,4 @@ IDR (Irreproducible Discovery Rate) is used to measure the reproducibility of re
 ANALYSIS
 ========
 
-1. Trim QC
-   1. Make trim directory and subdirectories: `mkdir -p trim trim/trimLog trim/trimLogOutput trim/trimLogProcessed`
-   1. Place 02_trimLog files in trim/trimLog
-   1. Process files. Copy usage command from `processTrimLog.sh` and run it
-   1. Create visualizations using `trimViz.R`
- 
-1. Alignment QC
-   1. Make viz directory (inside `alignmentQC` directory)
-   1. Run alignment and count QC Scripts  
-
-      1. 01_mapq_alignment_qc.R  
-         1. Use the mapqc summary information to plot distributions of mapped, unmapped, and high-quality mapped reads.  
-         1. 01_mapq_alignment_qc.R -i 50_qc/mapq_summary.txt -o ./plots/alignQC/  
-
-      1. 02__plot_alignment_qc.R  
-         1. Use the bowtie2 alignment QC summary file to plot percentages of mapped reads.  
-         1. 02_plot_alignment_qc.R -i 50_qc/bowtie2.alignment.QC.summary.txt ./plots/alignQC -r 2,2,2  
-
-1. FastQC QC
-   1. Run multiqc if you didn't run it earlier on exacloud
-   1. Review the multiqc results
-   1. Run the over-represented sequence script `20_fastQCOverRepSeqs.sh`
 

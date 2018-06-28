@@ -10,7 +10,7 @@ Makes two files
 Usage: 
 
 cd $sdata/02_trimLog
-for file in *_report.txt; do name=${file%%_L005*}; sh $sdata/code/021_processTrimLog.sh $file $name trimLogProcessed/; done
+for file in *_report.txt; do name=${file%%_L005*}; sh $sdata/code/qc/01_processTrimLog.sh $file $name $sdata/data/qc/trimLogProcessed/; done
 
 
 '

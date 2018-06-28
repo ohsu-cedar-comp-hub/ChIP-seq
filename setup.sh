@@ -37,6 +37,12 @@ mkdir -p 00_fastqs \
 	60_idr \
 	70_phantom \
 	qc \
+	qc/multi_mapq \
+	qc/summary \
+	qc/trimLogProcessed/summary \
+	qc/trimLogProcessed/trimDist \
+	qc/plots/trimQC \
+	qc/plots/qlignQC \
 	extras \
 	extras/md5
 

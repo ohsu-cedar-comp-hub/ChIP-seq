@@ -7,7 +7,7 @@ Basically just removes the commented lines so it can be easily read by R.
 
 Usage: 
 
-sh $sdata/code/41_processDupLog.sh $sdata/data/41_remDupLog $sdata/data/qc/summary
+sh $sdata/code/20_processDupLog.sh $sdata/data/41_remDupLog $sdata/data/qc/summary
 
 '
 
