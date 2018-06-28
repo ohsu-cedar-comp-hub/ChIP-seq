@@ -169,6 +169,9 @@ PEAK CALLING
    ~$ sbatch $sdata/code/sbatch/54_sbatchSignalTracks.sh
    ~$ mv $sdata/code/sbatch/signalTrack_* $sdata/logs/54_signalTrack
    ```
+   
+   1. If you make signalTracks, you can also make the bedGraph and bigWig files. Use `55_sbatchSignalTrackBDGCMP.sh` the same way as `51_sbatchCallPeaksBDGCMP.sh` and use `56_sbatchSignalTrackBdg2bw.sh` the same way as `52_sbatchBdg2bw.`  
+   1. Note that you will have to make a new todo file. It should contain the "basenames" of each signalTrack.
 
 1. Run idr on samples as well.
    1. Copy `sdata/todo/54_signalTrack.txt` to `sdata/todo/60_idr.txt`
@@ -181,11 +184,134 @@ PEAK CALLING
 
    1. Check the `.err` files to see IDR results.
 
-###
-### STOPPED HERE 6/27/2018
-###
+REVIEW OF CURRENT DATA
+======================
 
-1. Transfer data to local for R analysis.  
+A lot of different files have been produced. Now to review what everything is and what it's potential purpose is.  
+
+### 50_peaks  
+
+This directory contains the original output of the MACS2 peak calling step. There are a few different file formats that contain essentially the same information, along with some QC information. Data in this directory can be used to visualize peaks in a genome browser, but if you ran the signal track steps above, those results are better to use for that purpose.  
+
+1. <sample>_control_lambda.bdg
+   1. bedGraph of control peak windows for determining lambda
+      1. Chromosome name
+      1. Start of window
+      1. End of window
+      1. Maximum local lambda. Estimated using
+         1. extsize
+         1. slocal
+         1. llocal
+   1. lambda is expected number of reads in window, so the "control lambda" is basically the expected noise
+   1. View this file along with the <sample>_treat_pileup.bdg to compare the treated peaks against the control noise.
+1. <sample>_model.r
+   1. Run this script to produce 'model shift size' and 'cross correlation' plots based on MACS2 run
+   1. Generates files:
+      1. <sample>_peakModel.pdf (model shift size)
+      1. <sample>_crossCor.pdf (cross correlation)
+1. <sample>_peaks.narrowPeak
+   1. BED6+4 with peak locations and summit
+      1. Chromosome name
+      1. Start position of peak (0-based)
+      1. End position of peak
+      1. Peak name
+      1. Integer score `int(-10*log10(qvalue))`
+      1. Strand (I think)
+      1. Fold enrichment for peak summit
+      1. -log10(pvalue) for peak summit
+      1. -log10(qvalue) for peak summit
+      1. Relative summit position to peak start
+   1. Able to load directly to UCSC genome browser
+1. <sample>_peaks.xls
+   1. Contains information about called peaks. One line per peak, plus header lines
+      1. Chromosome name
+      1. Start position of peak (1-based)
+      1. End position of peak
+      1. Length of peak region
+      1. Absolute peak summit position
+      1. pileup height at peak summit
+      1. -log10(pvalue) for the peak summit
+      1. Fold enrichment for the peak summit
+         1. Enrichment is compared against random Poisson distribtuion with local lambda
+      1. -log10(qvalue) of peak summit
+      1. name of peak
+   1. **NOTE THAT XLS COORDINATES ARE 1-BASED, WHICH IS DIFFERENT THAN BED'S O-BASED**
+1. <sample>_summits.bed
+   1. BED file with peak summit location for each peak
+      1. Chromosome name
+      1. Start position of summit (0-based). Will be `(narrowPeak start) + (narrowPeak relative summit position)`
+      1. End position of summit. Will be one more than start position.
+      1. Peak name
+      1. -log10(qvalue) of peak summit 
+1. <sample>_treat_pileup.bdg
+   1. bedGraph file of treatment peak windows
+      1. Chromosome name
+      1. Start of window
+      1. End of window
+      1. Pileup score
+      1. Scaled up or down relative to the control sample
+      1. View this in IGV or UCSC browser and compare with the control sample
+
+### 50.5_bedPeaks
+
+This directory contains the exact same information as can be found in the <sample>_peaks.narrowPeak files in 50_peaks. The only difference is that the 1st column now has "chr" prepended to the chromosome number, which is required for some downstream tools.  
+
+### 51_bdgcmp / 52_bw 
+
+The bdgcmp subcommand is designed to generate noise-subtracted tracks. The MACS2 developer explains a little about it [here](https://groups.google.com/forum/#!topic/macs-announcement/yefHwueKbiY). These files are also good to view in a genome browser. The 52_bw directory contains the same information as that in 51_bdgcmp, except in the smaller bigWig binary format instead. It's recommended to use these files for viewing, since they are the easiest to transfer from exacloud.
+
+1. <sample>_FE.bdg
+   1. linear Fold Enrichment
+   1. Simple descriptive measurement of difference between ChIP and control
+   1. Can introduce high variability at low signals
+1. <sample>_logLR.bdg
+   1. log10 likelihood ratio between ChIP and control.
+   1. Based on dynamic poisson model
+   1. statistical evaluation of enrichment.
+
+### 53_wigCorrelate  
+
+There is nothing to use in this directory as far as downstream application. Each output file lists the input files used for the correlation as well as the corrletion score. You will have already looked at these scores to determine whether or not to proceed with the signal track construction.  
+
+### 54_signalTrack / 55_st_bdgcmp / 56_st_bw  
+
+This directory contains the exact same file types as described in 50_peaks, 51_bdgcmp, and 52_bw. There is now one file for each treatment/group and all replicates have been combined into that file. These peaks are much higher confidence than those in the individual files. Use these results for visualization.  
+
+### 60_idr
+
+IDR (Irreproducible Discovery Rate) is used to measure the reproducibility of results from replicate experiments, described [here](https://github.com/nboley/idr) in detail. If the `--plot` option is selected, a few QC plots will be created in addition to the consensus peak files.  
+
+1. <sample>_idr
+   1. modified BED file (20 total columns)
+      1. Chromosome name
+      1. Start position of peak (0-based)
+      1. End position of peak
+      1. Name given to a region. '.' is used if nothing assigned. (my results have '.')
+      1. Scaled IDR value: `min(int(log2(-125*IDR)), 1000)`
+         1. IDR of 0 corresponds to score of 1000
+         1. IDR of 0.05 corresponds to 540
+         1. IDR of 1 corresponds to 0
+      1. strand (+, -, .)
+      1. signal value. Measurement of enrichment for the region for merged peaks
+      1. Merged peak p-value
+      1. Merged peak q-value
+      1. Merged peak summit
+      1. local IDR Value: -log10(localIDR)
+      1. global IDR Value: -log10(globalIDR)
+      1. rep1 start position of peak. Shifted based on offset
+      1. rep1 end position of peak
+      1. rep1 signal measure
+         1. If `--rank` option is set to `signal.value`, then this value will be the same as col7 of rep1's narrowPeak file
+         1. If `--rank` option is set to `p.value`, then it will be the same as col8 of rep1's narrowPeak file
+      1. rep1 summit value
+      1. rep2 start, end, signal, summit
+      1. repN start, end, signal, summit
+1. <sample>_idr.png
+   1. 4 different plots, see link above for full description.  
+
+###
+### Stop here 6/28/18
+###
 
 ANALYSIS
 ========
@@ -212,3 +338,4 @@ ANALYSIS
    1. Run multiqc if you didn't run it earlier on exacloud
    1. Review the multiqc results
    1. Run the over-represented sequence script `20_fastQCOverRepSeqs.sh`
+

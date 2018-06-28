@@ -32,6 +32,8 @@ mkdir -p 00_fastqs \
 	52_bw \
 	53_wigCorrelate \
 	54_signalTrack \
+	55_st_bdgcmp \
+	56_st_bw \
 	60_idr \
 	70_phantom \
 	qc \
@@ -55,6 +57,9 @@ mkdir -p 00_md5 \
 	51_callPeaksBDGCMP \
 	52_bdg2bw \
 	53_wigCorrelate \
+	54_signalTrack \
+	55_st_bdgcmp \
+	56_st_bw \
 	60_idr \
 	61_peakPlot \
 	70_phantom
