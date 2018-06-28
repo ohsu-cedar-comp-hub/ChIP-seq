@@ -5,7 +5,7 @@
 ###
 
 # Executable
-TRIM=/home/exacloud/lustre1/BioCoders/Applications/trim_galore
+TRIM=$BIOCODERS/Applications/trim_galore
 
 # Arguments
 IN=$1                  # Path to input directory

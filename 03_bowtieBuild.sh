@@ -4,22 +4,22 @@
 ### Build index for bowtie2 alignment
 ###
 
-# Executable
-BOWTIE=/home/exacloud/lustre1/BioCoders/Applications/bowtie2-build
+### Executable
+BOWTIE=$BIOCODERS/Applications/bowtie2-build
 
-# Arguments
+### Arguments
 DIR=$1           # Directory to write out everything
 IN=$2            # Reference genome file
 BASE=$3          # base name for output file
 
-# File manipulation
+### File manipulation
 
-# Test
+### Test
 echo "DIR: " $DIR
 echo "IN: " $IN
 echo "BASE: " $BASE
 
-# Run bowtie
+### Run bowtie
 cd $DIR
 cmd="$BOWTIE $IN $BASE"
 

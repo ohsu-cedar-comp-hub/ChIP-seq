@@ -1,44 +1,35 @@
 #!/bin/sh
 
 ###
-### Run Bowtie2 for Alignment to sgRNA Reference
+### Convert bedGraph to bigWig
 ###
 
-# Executable
+### Executable
 BDG2BW=/home/exacloud/lustre1/CompBio/users/hortowe/Sherman_80/DNA180319MS/misc/bdg2bw
 
-# Ref
+### Ref
 LEN=/home/exacloud/lustre1/CompBio/users/hortowe/Sherman_80/DNA180319MS/misc/hg38.len
 
-# Arguments
+### Arguments
 IN=$1
-#CTL=$2
 OUT=$2
 
-# File manipulation
+### File manipulation
 DIR=${IN%/*}
 FILE=${IN##*/}
-
-#CTLDIR=${CTL%/*}
-#CTLFILE=${CTL##*/}
-
 BASE=${FILE%%.bam}
 
-# Test
+### Test
 echo "IN: " $IN
 echo "IN DIR: " $DIR
 echo "IN FILE: " $FILE
-echo ""
-#echo "CTL: " $CTL
-#echo "CTLDIR: " $CTLDIR
-#echo "CTLFILE: " $CTLFILE
 echo ""
 echo "BASENAME: " $BASE
 echo ""
 echo "OUT DIR: " $OUT
 echo ""
 
-# Run macs2
+### Convert Fold Enrichment
 cd $DIR
 cmd="
 $BDG2BW \
@@ -49,7 +40,7 @@ $BDG2BW \
 echo $cmd
 eval $cmd
 
-
+### Convert log10 likelihood ratio
 cmd="
 $BDG2BW \
 	$DIR/$BASE\_logLR.bdg \

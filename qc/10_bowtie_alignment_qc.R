@@ -22,10 +22,6 @@ optlist <- list(
     c("-i", "--inputDir"),
     type = "character",
     help = "Directory containing all bowtie2_<cluster.num>.err files. Should be $sdata/logs/10_bowtie (or similar)."),
-#  make_option(
-#    c("-f", "--fileDir"),
-#    type = "character",
-#    help = "Directory containing the sam files ($sdata/data/10_sam). This is just to map the names. TODO - remove this dependency."),
   make_option(
     c("-o", "--outDir"),
     type = "character",
@@ -33,7 +29,6 @@ optlist <- list(
 )
 
 ### Parse command line
-#p <- OptionParser(usage = "%prog -i inputDir -f fileDir -o outDir",
 p <- OptionParser(usage = "%prog -i inputDir -o outDir",
 	option_list = optlist)
 
@@ -41,7 +36,6 @@ args <- parse_args(p)
 opt <- args$options
 
 input.dir <- args$inputDir
-#file.dir <- args$fileDir
 out.dir <- args$outDir
 
 ###############
@@ -53,12 +47,6 @@ files.in.dir <- list.files(input.dir, pattern="*.err");
 
 ### Sort them (shouldn't need this, but just in case)
 files.in.dir <- files.in.dir[order(as.numeric(gsub("bowtie2_[0-9]+_|\\.err", "", files.in.dir)))]
-
-### Get names from other directory
-### Don't need to sort because this is order they were run in
-### TODO - could update the bowtie run and echo the file name to the output file and extract it here.
-#file.names <- list.files(file.dir, pattern="*.sam")
-#names_v <- sapply(file.names, function(x) paste(strsplit(x, split = "_")[[1]][2:3], collapse = "_"), USE.NAMES=F)
 
 ### Create output data.frame of appropriate fields
 output.df <- data.frame(sample=character(),                 # 1
@@ -80,9 +68,6 @@ output.df <- data.frame(sample=character(),                 # 1
 for(i in 1:length(files.in.dir))	{
     ## Get file
     curr.file <- file.path(input.dir, files.in.dir[i]);
-    
-    ## Get name
-    #curr.name <- names_v[i]
     
     ## Read file
     curr.record <- readLines(curr.file);

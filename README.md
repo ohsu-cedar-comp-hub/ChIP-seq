@@ -1,7 +1,7 @@
-PROCEDURE FOR SHERMAN CRISPR SCREEN
-===================================
+PROCEDURE FOR ChIP-Seq
+======================
 
-Step-by-step instructions for how to analyze Sherman CRISPR data.  
+Step-by-step instructions for how to analyze ChIP-Seq data.  
 
 SETUP
 =====
@@ -33,7 +33,7 @@ SETUP
 1. Run multiqc on FastQC files.  
 
    ```
-   ~$ MULTIQC=/home/exacloud/lustre1/BioCoders/Applications/anaconda2/bin/multiqc
+   ~$ MULTIQC=$BIOCODERS/Applications/anaconda2/bin/multiqc
    ~$ $MULTIQC $sdata/data/FastQC
    <copy files to local drive to view>
    ```

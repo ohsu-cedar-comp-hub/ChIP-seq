@@ -5,7 +5,7 @@
 ###
 
 ### Executable
-BOWTIE=/home/exacloud/lustre1/BioCoders/Applications/anaconda2/bin/bowtie2
+BOWTIE=$BIOCODERS/Applications/anaconda2/bin/bowtie2
 
 ### Echo information to stderr
 echoerr() { printf "%s\n" "$*" >&2; }

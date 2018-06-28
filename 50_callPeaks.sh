@@ -1,19 +1,19 @@
 #!/bin/sh
 
 ###
-### Run Bowtie2 for Alignment to sgRNA Reference
+### Run MACS2 to call peaks on aligned and filtered bam files
 ###
 
-# Executable
-MACS2=/home/exacloud/lustre1/BioCoders/Applications/anaconda2/bin/macs2
+### Executable
+MACS2=$BIOCODERS/Applications/anaconda2/bin/macs2
 
-# Arguments
+### Arguments
 IN=$1
 CTL=$2
 OUT=$3
 OUT2=$4
 
-# File manipulation
+### File manipulation
 DIR=${IN%/*}
 FILE=${IN##*/}
 
@@ -22,7 +22,7 @@ CTLFILE=${CTL##*/}
 
 BASE=${FILE%%.bam}
 
-# Test
+### Test
 echo "IN: " $IN
 echo "IN DIR: " $DIR
 echo "IN FILE: " $FILE
@@ -36,7 +36,7 @@ echo ""
 echo "OUT DIR: " $OUT
 echo ""
 
-# Run macs2
+### Run macs2
 cd $DIR
 cmd="
 $MACS2 callpeak \
@@ -53,7 +53,7 @@ $MACS2 callpeak \
 "
 
 echo $cmd
-#eval $cmd
+eval $cmd
 
 ### Convert narrowpeaks file to bed
 mkdir -p $OUT2
@@ -63,7 +63,7 @@ cmd="cut -f 1-5 $OUT/$BASE\_peaks.narrowPeak | sed -E 's/(^[1-9X]|^1[0-9]|^2[0-2
 echo $cmd
 eval $cmd
 
-### Original command
+### Original command (can delete at some point. Keeping for now)
 # $MACS2 callpeak \
 # 	--treatment $DIR/$FILE \
 # 	--control $CTLDIR/$CTLFILE \

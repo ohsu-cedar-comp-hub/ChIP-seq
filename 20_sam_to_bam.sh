@@ -1,30 +1,30 @@
 #!/bin/sh
 
 ###
-### Run Bowtie2 for Alignment to sgRNA Reference
+### Convert sam files to bam and sort them
 ###
 
-# Executable
-BOWTIE=/home/exacloud/lustre1/BioCoders/Applications/anaconda2/bin/bowtie2
-SAMTOOLS=/home/exacloud/lustre1/BioCoders/Applications/samtools-1.3.1/bin/samtools
+### Executable
+BOWTIE=$BIOCODERS/Applications/anaconda2/bin/bowtie2
+SAMTOOLS=$BIOCODERS/Applications/samtools-1.3.1/bin/samtools
 
-# Arguments
+### Arguments
 IN=$1
 OUT=$2
 
-# File manipulation
+### File manipulation
 DIR=${IN%/*}
 FILE=${IN##*/}
 BASE=${FILE%%.*}
 
-# Test
+### Test
 echo "IN: " $IN
 echo "OUT: " $OUT
 echo "DIR: " $DIR
 echo "FILE: " $FILE
 echo "BASE: " $BASE
 
-# Run samtools
+### Run samtools
 cd $DIR
 
 ### Convert to bam
