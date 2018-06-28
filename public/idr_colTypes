@@ -1,0 +1,20 @@
+1	chrom	name of chromosome for common peak
+2	chromStart	0-based. 0 is beginning of chrom, not genome
+3	chromEnd	final base not included in feature display
+4	name	name given to region fro common peaks ('.' if not assigned)
+5	score	scaled IDR value. IDR of 0 means score of 1000. IDR of 1 means score of 0.
+6	strand	+/- or '.' if not assigned
+7	signalValue	measurement of enrichment for the region for merged peaks
+8	p-value	merged peak p-value
+9	q-value	merged peak q-value
+10	summit	merged peak summit
+11	localIDR	local IDR value
+12	globalIDR	global IDR value
+13	rep1_chromStart
+14	rep1_chromEnd
+15	rep1_signalValue
+16	rep1_summit
+17	rep2_chromStart
+18	rep2_chromEnd
+19	rep2_signalValue
+20	rep2_summit

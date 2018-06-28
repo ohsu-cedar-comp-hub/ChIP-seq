@@ -134,7 +134,7 @@ PEAK CALLING
    ```
 
 1. Convert bedGraph files to bigWig files  
-   1. A few extra scripts are required (located in `misc/`). See above link for more detailed instruction.
+   1. A few extra scripts are required (located in `public/`). See above link for more detailed instruction.
 
    ```
    ~$ sbatch $sdata/code/sbatch/52_sbatchBdg2bw.sh

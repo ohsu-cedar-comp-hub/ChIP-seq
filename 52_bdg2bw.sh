@@ -5,10 +5,10 @@
 ###
 
 ### Executable
-BDG2BW=/home/exacloud/lustre1/CompBio/users/hortowe/Sherman_80/DNA180319MS/misc/bdg2bw
+BDG2BW=$sdata/code/public/bdg2bw
 
 ### Ref
-LEN=/home/exacloud/lustre1/CompBio/users/hortowe/Sherman_80/DNA180319MS/misc/hg38.len
+LEN=$sdata/code/public/hg38.len
 
 ### Arguments
 IN=$1
