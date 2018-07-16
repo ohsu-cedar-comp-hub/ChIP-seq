@@ -49,3 +49,6 @@ $BDG2BW \
 
 echo $cmd
 eval $cmd
+
+### Move to output
+mv $DIR/$BASE\_logLR.bw $DIR/$BASE\_FE.bw $OUT

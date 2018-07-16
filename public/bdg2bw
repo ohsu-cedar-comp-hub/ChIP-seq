@@ -29,7 +29,8 @@ echoerr LC Collate
 LC_COLLATE=C sort -k1,1 -k2,2n ${F}.clip > ${F}.sort.clip
 
 echoerr Starting bedGraphToBigWig
-$BGTBW ${F}.sort.clip ${G} ${F/bdg/bw}
+### Added '.' before 'bdg' and 'bw' because was changing directory name 55_st_bdgcmp to 55_st_bwcmp
+$BGTBW ${F}.sort.clip ${G} ${F/.bdg/.bw}
 
 echoerr Final removal
 rm -f ${F}.clip ${F}.sort.clip

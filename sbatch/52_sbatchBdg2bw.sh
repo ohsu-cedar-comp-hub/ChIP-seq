@@ -14,7 +14,7 @@
 
 ### SET I/O VARIABLES
 
-IN=$sdata/data/50_peaks                              # Directory containing all input files. Should be one job per file
+IN=$sdata/data/51_bdgcmp                             # Directory containing all input files. Should be one job per file
 OUT=$sdata/data/52_bw                                # Directory where output files should be written
 MYBIN=$sdata/code/52_bdg2bw.sh                       # Path to shell script or command-line executable that will be used
 TODO=$sdata/todo/50_callPeaks.txt                    # Todo file containing all files to call peaks for
@@ -31,4 +31,3 @@ CURRFILE=`awk -v line=$SLURM_ARRAY_TASK_ID '{if (NR == line) print $0}' $TODO`
 ### Execute
 mkdir -p $OUT
 
-$MYBIN $IN/$CURRFILE $OUT

@@ -14,7 +14,7 @@
 
 ### SET I/O VARIABLES
 
-IN=$sdata/data/54_signalTrack                        # Directory containing all input files. Should be one job per file
+IN=$sdata/data/55_st_bdgcmp                           # Directory containing all input files. Should be one job per file
 OUT=$sdata/data/56_st_bw                             # Directory where output files should be written
 MYBIN=$sdata/code/52_bdg2bw.sh                       # Path to shell script or command-line executable that will be used
 TODO=$sdata/todo/55_signalTrack_bdgcmp.txt           # Todo file containing all files to call peaks for
