@@ -206,23 +206,18 @@ for (i in 1:length(treats_v)){
 ### PLOT ###~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ############
 
-cmPlot <- ggplot(comboTrimData_lsdt[["CM"]], aes(x = length, y = count, fill = Type)) + 
-  geom_bar(stat = "identity") + facet_wrap(~ Sample) + 
-  labs(x = "Trimmed Length", y = "Count (millions)") +
-  my_theme +
-  ggtitle("Histogram of Trimmed Lengths - CM")
-cmPlot
-
-dmemPlot <- ggplot(comboTrimData_lsdt[["DMEM"]], aes(x = length, y = count, fill = Type)) + 
-  geom_bar(stat = "identity") + facet_wrap(~ Sample) + 
-  labs(x = "Trimmed Length", y = "Count (millions)") +
-  my_theme +
-  ggtitle("Histogram of Trimmed Lengths - DMEM")
-dmemPlot
-
 pdf(file = file.path(outDir_v, "trimLengthDistributions.pdf"))
 
-print(cmPlot)
-print(dmemPlot)
-
+for (i in 1:length(comboTrimData_lsdt)){
+	## Get name and data
+	currName_v <- names(comboTrimData_lsdt)[i]
+	currData_dt <- comboTrimData_lsdt[[currName_v]]
+	## Make Plot
+	currPlot_gg <- ggplot(currData_dt, aes(x = length, y = count, fill = Type)) +
+		geom_bar(stat="identity") + facet_wrap(~ Sample) +
+		labs(x = "Trimmed Length", y = "Count (millions)") +
+		my_theme + ggtitle(paste0("Histogram of Trimmed Lengths - ", currName_v))
+	## Print plot
+	print(currPlot_gg)
+} # for i
 dev.off()
