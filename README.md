@@ -12,7 +12,17 @@ SETUP
    export sdata="/path/to/LIBXXXXXMS"
    export stool="/path/to/this/installation"
    export BIOCODERS="/path/to/BioCoders/"
+   export R_LIBS_USER="$BIOCODERS/InstalledLibraries/R"
+   export PATH="$PATH:$BIOCODERS/Applications/anaconda2/bin"
    ```
+1. Double-check that R is pointing to the right directory by running the following:
+
+   ```
+   ~$ R
+   > .libPaths()
+   [1] "/home/exacloud/lustre1/BioCoders/InstalledLibraries/R"
+   ```
+   The path listed above should be the first result. You will likely have multiple paths listed after this one.  
 
 1. Run `sh $stool/setup.sh` to create empty directories.  
 
