@@ -1,7 +1,17 @@
 PROCEDURE FOR ChIP-Seq
 ======================
 
-Step-by-step instructions for how to analyze ChIP-Seq data.  
+Step-by-step instructions for how to analyze ChIP-Seq data starting from raw FASTQ files and ending with analysis-ready peak files.  
+
+Most of the work in the pipeline is done by various scripts in the `code` directory (created by `setup.sh`). These scripts will be submitted to the Slurm job scheduler in "batch jobs" using the scripts located in the `sbatch` directory. Each "code" script has a corresponding "sbatch" script with the same numeric prefix (e.g. `code/00_process.md5.R` and `code/sbatch/00_sbatchmd5.sh`).  
+
+A majority of the sbatch scripts are "array jobs", which means that one job is sent to the scheduler per file. If a tool is an array job, it will have `#SBATCH --array 1-n` as the last `#SBATCH` argument at the top of the script, where n is the number of individual files that need to be processed. Additionally, the output and error files created for each job will end in `_%A_%a.out` or `_%A_%a.err` for array jobs and `_%j.out` or `_%j.err` for non-array jobs.  
+
+Each job submission will create an output and an error file that have a descriptive prefix denoting the tool it came from, along with the job or array id. These files will be generated in whichever directory you are currently in when you submit to Slurm. There is a qc directory with sub-directories for each step in the pipeline that are designed to hold these log files.  
+
+In addition to the main processing steps, there are also some qc scripts that are housed in the `code/qc` directory. You will see them mentioned throughout the steps of the pipeline. They mainly parse different log outputs from the main tools and create qc plots for review.  
+
+There are also a number of analysis scripts that have yet to be generalized and also have not been designed to be submitted to Slurm. They're located in `code/analysis`. 
 
 SETUP
 =====
