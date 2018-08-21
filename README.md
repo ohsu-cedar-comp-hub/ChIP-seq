@@ -66,7 +66,8 @@ SETUP
    ~$ mv $sdata/code/sbatch/unzip_* $sdata/logs/01_unzip
    ```
 
-1. Trim adapter sequence, reformat log files, and make plots
+1. Trim adapter sequence, reformat log files, and make plots **NEED TO GENERALIZE A BIT MORE!**	
+Notes:  For the "01_processTrimLog.sh step - be sure to check the file name indicators (eg, "L005" may not be present in your file names!!). Also, Check that your files are in the indicated directories for the 02_trimViz.R step.
 
    ```
    ~$ sbatch $sdata/code/sbatch/02_sbatchTrimSeq.sh
@@ -75,6 +76,7 @@ SETUP
    ~$ for file in *_report.txt; do name=${file%%_L005*}; sh $sdata/code/qc/01_processTrimLog.sh $file $name trimLogProcessed/; done
    ~$ Rscript $sdata/code/qc/02_trimViz.R --summaryDir $sdata/data/qc/trimLogProcessed/summary/ --trimDistDir $sdata/data/qc/trimLogProcessed/trimDist --meta $sdata/meta/meta.txt --outDir $sdata/data/qc/plots/trimQC/
    ```
+
 
 1. Create bowtie index.  
 
